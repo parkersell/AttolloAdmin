@@ -1,6 +1,8 @@
 from django import forms
 from .models import Student, School
 
+
+#this isnt used
 class StudentUpload(forms.ModelForm):
     class Meta:
         model = Student

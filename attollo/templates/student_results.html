@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Search Results</h1>
+
+<form action="{% url 'search' %}" method="get">
+    <input name="name" type="text" placeholder="Search...">
+</form>
+{% if object_list %}
+<ul>
+    {% for student in object_list %}
+    <h2>{{student.fname}} {{student.lname}}</h2>
+    <table>
+        {% for label, value in student.get_fields_forsearch %}
+        <tr>
+            {% if label == "Profile" %}
+            {% if value %}
+            <td>{{ label }}</td>
+            <td><img src="{{ student.image.url }}"></td>
+            {% else %}
+            <td>{{ label }}</td>
+            <td>No Profile Image</td>
+            {% endif %}
+            {% elif label == "Additional Comments" %}
+            {% if value %}
+            <td>{{ label }}</td>
+            <td>{{ value }}</td>
+            {% else %}
+            <td>{{ label }}</td>
+            <td>No Comments</td>
+            {% endif %}
+            {% else %}
+            <td>{{ label }}</td>
+            <td>{{ value }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+</ul>
+{% else %}
+<p>There are no students with this name.</p>
+{% endif %}
+{% endblock content %}
