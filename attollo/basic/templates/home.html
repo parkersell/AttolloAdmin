@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+
+{% block title %}Attollo Prep Admin{% endblock %}
+
+
+{% block links %}
+<!-- Custom styles for this template-->
+<link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+{% endblock %}
+
+
+{% block content %}
+<!-- Content Row -->
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Students</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        {% if students.first %}
+                        {% for label, value in students.first.get_fields_forsearch %}
+                        <th>{{label}}</th>
+                        {% endfor %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        {% if students.first %}
+                        {% for label, value in students.first.get_fields_forsearch %}
+                        <th>{{label}}</th>
+                        {% endfor %}
+                        {% endif %}
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        {% for label, value in student.get_fields_forsearch %}
+                        {% if label == "Profile" %}
+                        {% if value %}
+                        <td><img src="{{ student.image.url }}"></td>
+                        {% else %}
+                        <td>No Profile Image</td>
+                        {% endif %}
+                        {% elif label == "First Name" %}
+                        <td><a href="{{student.get_absolute_url}}">{{value}}</a></td>
+
+                        {% else %}
+                        <td>{{ value }}</td>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Page level plugins -->
+<script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+<!-- Page level custom scripts -->
+<script src="/static/js/demo/datatables-demo.js"></script>
+{% endblock %}

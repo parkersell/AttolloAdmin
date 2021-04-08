@@ -7,7 +7,7 @@ from .models import Student, School
 from .serializers import *
 
 from django.views.generic.edit import FormView, CreateView, View
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView
 from django.db.models import Q
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -19,53 +19,81 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 
 class StudentUploadView(CreateView):
-    template_name = "createstudent.html"
+    template_name = "uploadobject.html"
     model = Student
-    fields = '__all__'
-    success_url = '/'
-    form = StudentUpload
+    # fields = '__all__'
+    form_class = StudentUpload
 
 
 class SchoolUploadView(CreateView):
-    template_name = "createstudent.html"
+    template_name = "uploadobject.html"
     model = School
     fields = '__all__'
     success_url = '/'
-    form = SchoolUpload
+    # form = SchoolUpload
 
 
-class HomePageView(TemplateView):
-    template_name = 'home.html'
-
-
-class SearchResultsView(ListView):
+class StudentDetailView(DetailView):
     model = Student
-    template_name = 'student_results.html'
-
-    queryset = []
-
-    def get_queryset(self):
-        query = self.request.GET.get('name')
-        object_list = Student.objects.filter(
-            Q(fname__icontains=query) | Q(lname__icontains=query)
-        )
-        return object_list
-
-    # if Book.objects.filter(user=self.user, title=title).exists():
-    #         raise forms.ValidationError("You have already written a book with same title.")
+    template_name = "studentdetail.html"
 
 
-class AllStudentsView(ListView):
+def deletestudent(request, pk):
+    student = get_object_or_404(Student, pk=pk)  # Get your current student
+
+    if request.method == 'POST':         # If method is POST,
+        student.delete()                     # delete the cat.
+        return redirect('/')
+
+
+class StudentDeleteView(DeleteView):
     model = Student
-    template_name = 'student_results.html'
+    success_url = '/'
 
 
-class AllStudentsView(ListView):
+class StudentUpdateView(UpdateView):
+    template_name = "uploadobject.html"
     model = Student
-    template_name = 'student_results.html'
+    # fields = '__all__'
+    form_class = StudentUpload
+
+
+""" 
+Testing using startBootstrap 
+ - created Index and Login from tutorial
+"""
+
+
+class Index(LoginRequiredMixin, View):
+    template = 'home.html'
+    login_url = '/login/'
+
+    def get(self, request):
+        students = Student.objects.all()
+        return render(request, self.template, {'students': students})
+
+
+class Login(View):
+    template = 'registration/login.html'
+
+    def get(self, request):
+        form = AuthenticationForm()
+        return render(request, self.template, {'form': form})
+
+    def post(self, request):
+        form = AuthenticationForm(request.POST)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect('/')
+        else:
+            return render(request, self.template, {'form': form})
 
 
 """
@@ -87,7 +115,7 @@ def students_list(request):
         data = []
         nextPage = 1
         previousPage = 1
-        students = Student.objects.all()
+        students = Student.objects.all().order_by('pk')
         page = request.GET.get('page', 1)
         # this is interesting it sets the max number of students per page
         paginator = Paginator(students, 10)
@@ -113,9 +141,6 @@ def students_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-...
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -144,37 +169,3 @@ def students_detail(request, pk):
     elif request.method == 'DELETE':
         student.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-""" 
-Testing using startBootstrap
-
-"""
-
-
-class Index(LoginRequiredMixin, View):
-    template = 'index.html'
-    login_url = '/login/'
-
-    def get(self, request):
-        students = Student.objects.all()
-        return render(request, self.template, {'students': students})
-
-
-class Login(View):
-    template = 'login.html'
-
-    def get(self, request):
-        form = AuthenticationForm()
-        return render(request, self.template, {'form': form})
-
-    def post(self, request):
-        form = AuthenticationForm(request.POST)
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect('/')
-        else:
-            return render(request, self.template, {'form': form})
