@@ -8,11 +8,32 @@ from phonenumber_field.modelfields import PhoneNumberField
 from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 
+# https://pypi.org/project/django-address/
+from address.models import AddressField
+
+# https://pypi.org/project/django-multiselectfield/
+from multiselectfield import MultiSelectField
+
 # https://github.com/daviddrysdale/python-phonenumbers
 import phonenumbers
 
 
 class Student(models.Model):
+    RACE_CHOICES = ((1, 'Caucasian'),
+                    (2, 'Hispanic'),
+                    (3, 'African American'),
+                    (4, 'Asian'),
+                    (5, 'American Indian'),
+                    (6, 'Pacific Islander'))
+    SIZE_CHOICES = (
+        ('S', 'S'),
+        ('M', 'M'),
+        ('L', 'L'),
+        ('XL', 'XL'),
+        ('XXL', 'XXL'),
+    )
+    EMERGENCY_CHOICES = (('Guardian 1', 'Guardian 1'),
+                         ('Guardian 2', 'Guardian 2'))
     fname = models.CharField(max_length=30, verbose_name="First Name")
     lname = models.CharField(max_length=30, verbose_name="Last Name")
     email = models.EmailField(max_length=40, verbose_name="Email")
@@ -26,6 +47,44 @@ class Student(models.Model):
     gender = models.CharField(max_length=30, verbose_name="Gender")
     image = models.ImageField(
         upload_to='profile_image', blank=True, verbose_name="Profile")
+    race = MultiSelectField(choices=RACE_CHOICES,
+                            max_choices=3, verbose_name="Race")
+    # address = AddressField(verbose_name="Address")
+    shirt = models.CharField(
+        choices=SIZE_CHOICES, verbose_name="Shirt size", max_length=3)
+    short = models.CharField(
+        choices=SIZE_CHOICES, verbose_name="Short size", max_length=3)
+    student_ig = models.CharField(
+        max_length=30, verbose_name="Instagram Username", blank=True)
+    favcandy = models.CharField(
+        max_length=30, verbose_name="Favorite Candy", blank=True)
+    guard1fname = models.CharField(
+        max_length=30, verbose_name="Guardian 1 First Name")
+    guard1sname = models.CharField(
+        max_length=30, verbose_name="Guardian 1 Second Name")
+    guard1phonenum = PhoneNumberField(
+        blank=True, verbose_name="Guardian 1 Phone Number")
+    guard1email = models.EmailField(
+        max_length=40, verbose_name="Guardian 1 Email")
+    gaurd1occ = models.CharField(
+        max_length=40, verbose_name="Guardian 1 Occupation", blank=True)
+    guard1shirt = models.CharField(
+        choices=SIZE_CHOICES, verbose_name="Guardian 1 Shirt size", max_length=3, blank=True)
+
+    guard2fname = models.CharField(
+        max_length=30, verbose_name="Guardian 2 First Name", blank=True)
+    guard2sname = models.CharField(
+        max_length=30, verbose_name="Guardian 2 Second Name", blank=True)
+    guard2phonenum = PhoneNumberField(
+        blank=True, verbose_name="Guardian 2 Phone Number")
+    guard2email = models.EmailField(
+        max_length=40, verbose_name="Guardian 2 Email", blank=True)
+    gaurd2occ = models.CharField(
+        max_length=40, verbose_name="Guardian 2 Occupation", blank=True)
+    guard2shirt = models.CharField(
+        choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt size", max_length=3, blank=True)
+    emergcontact = models.CharField(
+        choices=EMERGENCY_CHOICES, max_length=20, verbose_name="Emergency Contact")
     comments = models.TextField(blank=True, verbose_name="Additional Comments")
 
     def get_fields_forsearch(self):
@@ -38,9 +97,9 @@ class Student(models.Model):
             if neededfields[i][0] == "School":
                 school_pk = neededfields[i][1]
                 neededfields[i] = ("School", School.objects.get(pk=school_pk))
-            if neededfields[i][0] == "Phone Number":
-                neededfields[i] = ("Phone Number", phonenumbers.format_number(
-                    self.phonenum, phonenumbers.PhoneNumberFormat.NATIONAL))
+            if "Phone Number" in neededfields[i][0]:
+                neededfields[i] = (neededfields[i][0], phonenumbers.format_number(
+                    neededfields[i][1], phonenumbers.PhoneNumberFormat.NATIONAL))
             if neededfields[i][0] == "Year in School":
                 neededfields[i] = (
                     "Year in School", self.get_year_in_school_display())

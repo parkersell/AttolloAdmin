@@ -2,7 +2,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render
 
-from .forms import SchoolUpload, StudentUpload
+from .forms import SchoolUpload, StudentUpload, StudentForm
 from .models import Student, School
 from .serializers import *
 
@@ -25,7 +25,6 @@ from django.shortcuts import get_object_or_404
 class StudentUploadView(CreateView):
     template_name = "uploadobject.html"
     model = Student
-    # fields = '__all__'
     form_class = StudentUpload
 
 
@@ -59,7 +58,7 @@ class StudentUpdateView(UpdateView):
     template_name = "uploadobject.html"
     model = Student
     # fields = '__all__'
-    form_class = StudentUpload
+    form_class = StudentForm
 
 
 """ 
