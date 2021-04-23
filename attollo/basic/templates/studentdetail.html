@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "basestaff.html" %}
 
 {% block title %}Attollo Prep Admin - Student Detail{% endblock %}
 
@@ -16,7 +16,7 @@
                 <div class="card-body">
 
                     {% for label, value in object.get_fields_fordetail %}
-                    {% if label == "Profile" %}
+                    {% if label == "Profile Picture" %}
 
                     {% if value %}
                     <p><b>{{label}}</b>: <img src="{{ student.image.url }}"></p>
@@ -28,9 +28,9 @@
                     <p><b>{{label}}</b>: {{ value }}</p>
                     {% endif %}
                     {% endfor %}
-                    <a href="{% url 'student_update' object.pk %}" class="button"><input type="submit"
+                    <a href="{% url 'staff:student_update' object.pk %}" class="button"><input type="submit"
                             value="Update User"></a>
-                    <form action="{% url 'student_delete' object.pk %}" method="post">
+                    <form action="{% url 'staff:student_delete' object.pk %}" method="post">
                         {% csrf_token %}
                         <input type="submit" value="Delete student">
                     </form>

@@ -1,76 +1,56 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 
 {% block title %}Attollo Prep Admin{% endblock %}
 
+{% load crispy_forms_tags %}
 
 {% block links %}
-<!-- Custom styles for this template-->
-<link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 {% endblock %}
 
-
 {% block content %}
-<!-- Content Row -->
+<!-- https://bootsnipp.com/snippets/dlZAN -->
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Students</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        {% if students.first %}
-                        {% for label, value in students.first.get_fields_forsearch %}
-                        <th>{{label}}</th>
-                        {% endfor %}
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        {% if students.first %}
-                        {% for label, value in students.first.get_fields_forsearch %}
-                        <th>{{label}}</th>
-                        {% endfor %}
-                        {% endif %}
-                    </tr>
-                </tfoot>
-                <tbody>
-                    {% for student in students %}
-                    <tr>
-                        {% for label, value in student.get_fields_forsearch %}
-                        {% if label == "Profile" %}
-                        {% if value %}
-                        <td><img src="{{ student.image.url }}"></td>
-                        {% else %}
-                        <td>No Profile Image</td>
-                        {% endif %}
-                        {% elif label == "First Name" %}
-                        <td><a href="{{student.get_absolute_url}}">{{value}}</a></td>
+<div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card o-hidden border-0 shadow-lg my-3">
+            <div class="card-body p-0">
+                <div class="row">
+                    <div class="col-lg-6 ">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Welcome!</h1>
 
-                        {% else %}
-                        <td>{{ value }}</td>
-                        {% endif %}
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                <p>This is the Attollo Prep Admin Website</p>
+                                <a class="small" href="{% url 'login' %}"><button class="btn btn-primary "
+                                        type="submit">Login</button></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Sign in</h1>
 
+                                <a class="small" href="{% url 'student_signup' %}"><button class=" btn
+                                    btn-primary " type=" submit">As
+                                        Student</button></a>
+
+                                <a class="small" href="{% url 'staff_signup' %}"><button class="btn btn-primary "
+                                        type="submit">As Staff</button></a>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
+<!------ Include the above in your HEAD tag ---------->
 
-{% block scripts %}
-<!-- Page level plugins -->
-<script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
-<!-- Page level custom scripts -->
-<script src="/static/js/demo/datatables-demo.js"></script>
 {% endblock %}

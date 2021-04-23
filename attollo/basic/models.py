@@ -17,8 +17,24 @@ from multiselectfield import MultiSelectField
 # https://github.com/daviddrysdale/python-phonenumbers
 import phonenumbers
 
+# https://simpleisbetterthancomplex.com/tutorial/2018/01/18/how-to-implement-multiple-user-types-with-django.html
+from django.contrib.auth.models import AbstractUser
 
-class Student(models.Model):
+class Person(models.Model):
+    fname = models.CharField(max_length=30, verbose_name="First Name")
+    lname = models.CharField(max_length=30, verbose_name="Last Name")
+
+    def __str__(self):
+        return self.fname + ' ' +self.lname
+
+    __repr__ = __str__
+
+class User(AbstractUser):
+    is_student = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    data_id = models.OneToOneField(Person, on_delete=models.CASCADE, null=True)
+
+class Student(Person):
     RACE_CHOICES = ((1, 'Caucasian'),
                     (2, 'Hispanic'),
                     (3, 'African American'),
@@ -34,8 +50,8 @@ class Student(models.Model):
     )
     EMERGENCY_CHOICES = (('Guardian 1', 'Guardian 1'),
                          ('Guardian 2', 'Guardian 2'))
-    fname = models.CharField(max_length=30, verbose_name="First Name")
-    lname = models.CharField(max_length=30, verbose_name="Last Name")
+
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(max_length=40, verbose_name="Email")
     phonenum = PhoneNumberField(blank=True, verbose_name="Phone Number")
     dob = models.DateField(verbose_name="Date of Birth")
@@ -43,43 +59,43 @@ class Student(models.Model):
     schoolid = models.ForeignKey(
         "School", on_delete=models.CASCADE, verbose_name="School")
     # male, female, plus, could make this a choice one
-    gradyear = models.IntegerField(blank=True, verbose_name="Graduation Year")
+    gradyear = models.IntegerField(verbose_name="Graduation Year")
     gender = models.CharField(max_length=30, verbose_name="Gender")
     image = models.ImageField(
-        upload_to='profile_image', blank=True, verbose_name="Profile")
+        upload_to='profile_image', blank=True, verbose_name="Profile Picture")
     race = MultiSelectField(choices=RACE_CHOICES,
                             max_choices=3, verbose_name="Race")
     # address = AddressField(verbose_name="Address")
     shirt = models.CharField(
-        choices=SIZE_CHOICES, verbose_name="Shirt size", max_length=3)
+        choices=SIZE_CHOICES, verbose_name="Shirt Size", max_length=3)
     short = models.CharField(
-        choices=SIZE_CHOICES, verbose_name="Short size", max_length=3)
+        choices=SIZE_CHOICES, verbose_name="Short Size", max_length=3)
     student_ig = models.CharField(
         max_length=30, verbose_name="Instagram Username", blank=True)
     favcandy = models.CharField(
         max_length=30, verbose_name="Favorite Candy", blank=True)
     guard1fname = models.CharField(
         max_length=30, verbose_name="Guardian 1 First Name")
-    guard1sname = models.CharField(
-        max_length=30, verbose_name="Guardian 1 Second Name")
+    guard1lname = models.CharField(
+        max_length=30, verbose_name="Guardian 1 Last Name")
     guard1phonenum = PhoneNumberField(
         blank=True, verbose_name="Guardian 1 Phone Number")
     guard1email = models.EmailField(
         max_length=40, verbose_name="Guardian 1 Email")
-    gaurd1occ = models.CharField(
+    guard1occ = models.CharField(
         max_length=40, verbose_name="Guardian 1 Occupation", blank=True)
     guard1shirt = models.CharField(
         choices=SIZE_CHOICES, verbose_name="Guardian 1 Shirt size", max_length=3, blank=True)
 
     guard2fname = models.CharField(
         max_length=30, verbose_name="Guardian 2 First Name", blank=True)
-    guard2sname = models.CharField(
-        max_length=30, verbose_name="Guardian 2 Second Name", blank=True)
+    guard2lname = models.CharField(
+        max_length=30, verbose_name="Guardian 2 Last Name", blank=True)
     guard2phonenum = PhoneNumberField(
         blank=True, verbose_name="Guardian 2 Phone Number")
     guard2email = models.EmailField(
         max_length=40, verbose_name="Guardian 2 Email", blank=True)
-    gaurd2occ = models.CharField(
+    guard2occ = models.CharField(
         max_length=40, verbose_name="Guardian 2 Occupation", blank=True)
     guard2shirt = models.CharField(
         choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt size", max_length=3, blank=True)
@@ -93,13 +109,16 @@ class Student(models.Model):
         allfields.insert(4, ("Age", self.age))
         # takes out id
         neededfields = allfields[1:]
+        # take out person pointer
+        del neededfields[2]
         for i in range(len(neededfields)):
             if neededfields[i][0] == "School":
                 school_pk = neededfields[i][1]
                 neededfields[i] = ("School", School.objects.get(pk=school_pk))
             if "Phone Number" in neededfields[i][0]:
-                neededfields[i] = (neededfields[i][0], phonenumbers.format_number(
-                    neededfields[i][1], phonenumbers.PhoneNumberFormat.NATIONAL))
+                if neededfields[i][1] != "":
+                    neededfields[i] = (neededfields[i][0], phonenumbers.format_number(
+                        neededfields[i][1], phonenumbers.PhoneNumberFormat.NATIONAL))
             if neededfields[i][0] == "Year in School":
                 neededfields[i] = (
                     "Year in School", self.get_year_in_school_display())
@@ -125,17 +144,12 @@ class Student(models.Model):
             ((today.month, today.day) < (birthDate.month, birthDate.day))
         return age
 
-    def __str__(self):
-        return self.fname + ' ' + self.lname
-
-    __repr__ = __str__
-
     def get_absolute_url(self):
-        return reverse('student_detail', kwargs={'pk': self.pk})
+        return reverse('staff:student_detail', kwargs={'pk': self.pk})
 
 
 class School(models.Model):
-    name = models.CharField(max_length=50, verbose_name="School Name")
+    name = models.CharField(max_length=50, verbose_name="School Name", unique=True)
     # blank is for form validation, null value is "" for this field
     county = models.CharField(max_length=30, blank=True, verbose_name="County")
     district = models.CharField(
@@ -145,3 +159,13 @@ class School(models.Model):
         return self.name
 
     __repr__ = __str__
+
+    def get_absolute_url(self):
+        return reverse('staff:school_detail', kwargs={'pk': self.pk})
+
+
+class Staff(Person):
+    email = models.EmailField(max_length=40, verbose_name="Email")
+
+    def get_absolute_url(self):
+        return reverse('staff:staffmember_detail', kwargs={'pk': self.pk})

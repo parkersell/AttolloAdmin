@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'multiselectfield',
     'address',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +78,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'attollo.wsgi.application'
 
 
-# Default Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# # Default Database
+# # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # DATABASES = {
 #     'default': {
@@ -158,9 +159,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = 'os.path.join(BASE_DIR, 'attollo/basic/static')'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'attollo/basic/static')
 STATIC_ROOT = 'static'
 MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'attollo/media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'attollo/media')
 MEDIA_ROOT = 'media'
 PHONENUMBER_DEFAULT_REGION = 'US'
+
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_URL='login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+AUTH_USER_MODEL = 'basic.User'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
