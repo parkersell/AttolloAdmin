@@ -2,7 +2,7 @@ from attollo.settings.common import *
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = TRUE
+DEBUG = False
 
 ALLOWED_HOSTS = ['104.236.231.193', 'localhost']
 
