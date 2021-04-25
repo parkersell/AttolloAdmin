@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime
 from datetime import date
 from django.utils import timezone
@@ -20,6 +20,12 @@ import phonenumbers
 # https://simpleisbetterthancomplex.com/tutorial/2018/01/18/how-to-implement-multiple-user-types-with-django.html
 from django.contrib.auth.models import AbstractUser
 
+#https://github.com/un1t/django-resized
+from django_resized import ResizedImageField
+
+
+
+
 class Person(models.Model):
     fname = models.CharField(max_length=30, verbose_name="First Name")
     lname = models.CharField(max_length=30, verbose_name="Last Name")
@@ -33,6 +39,9 @@ class User(AbstractUser):
     is_student = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     data_id = models.OneToOneField(Person, on_delete=models.CASCADE, null=True)
+
+def max_value_current_year(value):
+    return MaxValueValidator(date.today().year+6)(value)  
 
 class Student(Person):
     RACE_CHOICES = ((1, 'Caucasian'),
@@ -59,13 +68,13 @@ class Student(Person):
     schoolid = models.ForeignKey(
         "School", on_delete=models.CASCADE, verbose_name="School")
     # male, female, plus, could make this a choice one
-    gradyear = models.IntegerField(verbose_name="Graduation Year")
+    gradyear = models.IntegerField(verbose_name="Graduation Year", validators=[MinValueValidator(2013), max_value_current_year])
     gender = models.CharField(max_length=30, verbose_name="Gender")
-    image = models.ImageField(
+    image = ResizedImageField(size=[300, 150], quality = 100,
         upload_to='profile_image', blank=True, verbose_name="Profile Picture")
     race = MultiSelectField(choices=RACE_CHOICES,
                             max_choices=3, verbose_name="Race")
-    # address = AddressField(verbose_name="Address")
+    address = AddressField(verbose_name="Address")
     shirt = models.CharField(
         choices=SIZE_CHOICES, verbose_name="Shirt Size", max_length=3)
     short = models.CharField(
@@ -101,11 +110,12 @@ class Student(Person):
         choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt size", max_length=3, blank=True)
     emergcontact = models.CharField(
         choices=EMERGENCY_CHOICES, max_length=20, verbose_name="Emergency Contact")
-    comments = models.TextField(blank=True, verbose_name="Additional Comments")
+    comments = models.JSONField(verbose_name="Comments")
 
     def get_fields_forsearch(self):
         allfields = [(field.verbose_name, field.value_from_object(self))
                      for field in self.__class__._meta.fields]
+        allfields.insert(4, ("Has an Account", self.has_user))
         allfields.insert(4, ("Age", self.age))
         # takes out id
         neededfields = allfields[1:]
@@ -129,12 +139,21 @@ class Student(Person):
                     neededfields[i] = ("Additional Comments", "No Comments")
         return neededfields
 
+    
     def get_fields_fordetail(self):
         searchfields = self.get_fields_forsearch()
         return searchfields[2:]
+    
+    def get_fields_forprofile(self):
+        searchfields = self.get_fields_forsearch()
+        searchfields = searchfields[2:]
+        del searchfields[1]
+        return searchfields
 
     def dobprint(self):
         return self.dob.strftime('%B %d, %Y')
+
+    
 
     @ property
     def age(self):
@@ -143,6 +162,13 @@ class Student(Person):
         age = today.year - birthDate.year - \
             ((today.month, today.day) < (birthDate.month, birthDate.day))
         return age
+
+    @ property
+    def has_user(self):
+        if User.objects.filter(username = self.email).exists():
+            return "Yes"
+        else:
+            return "No" 
 
     def get_absolute_url(self):
         return reverse('staff:student_detail', kwargs={'pk': self.pk})

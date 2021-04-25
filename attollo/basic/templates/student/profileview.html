@@ -15,14 +15,14 @@
             <div class="collapse show" id="collapseCardExample">
                 <div class="card-body">
 
-                    {% for label, value in object.get_fields_fordetail %}
+                    {% for label, value in object.get_fields_forprofile %}
                     {% if label == "Profile Picture" %}
-
                     {% if value %}
-                    <p><b>{{label}}</b>: <img src="{{ student.image.url }}"></p>
+                    <p><b>{{label}}</b>: <img src="/media/{{ value }}"></p>
                     {% else %}
                     <p><b>{{label}}</b>: No Profile Image</p>
                     {% endif %}
+
                     {% else %}
 
                     <p><b>{{label}}</b>: {{ value }}</p>
