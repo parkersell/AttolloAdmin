@@ -1,9 +1,8 @@
 from attollo.settings.common import *
 
-SECRET_KEY = 'm_i92jxyijfclsq^9#ko9)=#oy9(&yqifznt)-i4!&d)1!#r+4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = TRUE
 
 ALLOWED_HOSTS = ['104.236.231.193', 'localhost']
 
@@ -18,4 +17,3 @@ DATABASES = {
     }
 }
 
-GOOGLE_API_KEY = 'AIzaSyBAdEM87HNJTCIw1ryMBYyoks5O7tMTrF0'

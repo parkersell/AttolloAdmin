@@ -9,9 +9,13 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
+
 import os
 from pathlib import Path
+import environ
 
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'm_i92jxyijfclsq^9#ko9)=#oy9(&yqifznt)-i4!&d)1!#r+4'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
 
 ALLOWED_HOSTS = ['104.236.231.193', 'localhost']
 
@@ -131,3 +132,5 @@ LOGOUT_REDIRECT_URL = 'home'
 
 AUTH_USER_MODEL = 'basic.User'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+#this is for address
+GOOGLE_API_KEY = env('GOOGLE_API_KEY')
