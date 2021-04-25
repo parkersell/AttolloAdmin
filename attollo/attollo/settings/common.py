@@ -121,7 +121,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media'
 PHONENUMBER_DEFAULT_REGION = 'US'
-
 DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

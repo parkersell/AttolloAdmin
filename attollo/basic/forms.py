@@ -29,7 +29,7 @@ class PrettyJSONWidget(widgets.Textarea):
             self.attrs['cols'] = min(max(max(row_lengths) + 2, 40), 120)
             return value
         except Exception as e:
-            logger.warning("Error while formatting JSON: {}".format(e))
+            print("Error while formatting JSON: {}".format(e))
             return super(PrettyJSONWidget, self).format_value(value)
 
 
@@ -45,7 +45,7 @@ class StudentUpdate(forms.ModelForm):
         }
         widgets = {
             'phonenum': PhoneNumberInternationalFallbackWidget(),
-            'comments': PrettyJSONWidget()
+            # 'comments': PrettyJSONWidget()
         }
 
     def __init__(self, *args, **kwargs):

@@ -74,7 +74,7 @@ class Student(Person):
         upload_to='profile_image', blank=True, verbose_name="Profile Picture")
     race = MultiSelectField(choices=RACE_CHOICES,
                             max_choices=3, verbose_name="Race")
-    address = AddressField(verbose_name="Address")
+    # address = AddressField(verbose_name="Address")
     shirt = models.CharField(
         choices=SIZE_CHOICES, verbose_name="Shirt Size", max_length=3)
     short = models.CharField(
@@ -110,7 +110,8 @@ class Student(Person):
         choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt size", max_length=3, blank=True)
     emergcontact = models.CharField(
         choices=EMERGENCY_CHOICES, max_length=20, verbose_name="Emergency Contact")
-    comments = models.JSONField(verbose_name="Comments")
+    # comments = models.JSONField(verbose_name="Comments")
+    comments = models.TextField(blank=True, verbose_name="Additional Comments")
 
     def get_fields_forsearch(self):
         allfields = [(field.verbose_name, field.value_from_object(self))

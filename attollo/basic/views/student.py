@@ -30,7 +30,7 @@ class StudentSignUpView(CreateView):
 
 @method_decorator([login_required, student_required], name='dispatch')
 class ProfileView(View):
-    template = "student/profileview.html"
+    template = "student-profileview.html"
     model = Student
 
     def get_context_data(self, **kwargs):
@@ -50,7 +50,7 @@ class ProfileView(View):
 
 @method_decorator([login_required, student_required], name='dispatch')
 class UploadView(CreateView):
-    template_name = "student/uploadnewstudent.html"
+    template_name = "student-uploadnewstudent.html"
     model = Student
     form_class = NewStudentUpload
     success_url = '/student/'
@@ -70,7 +70,7 @@ class UploadView(CreateView):
 
 @method_decorator([login_required, student_required], name='dispatch') 
 class StudentUpdateView(UpdateView):
-    template_name = "student/uploadnewstudent.html"
+    template_name = "student-uploadnewstudent.html"
     model = Student
     form_class = StudentUpdate # Used to skip form validation
     success_url = '/student/'

@@ -29,7 +29,7 @@ class StaffSignUpView(CreateView):
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class StudentDash(View):
-    template = 'staff/studentdash.html'
+    template = 'staff-studentdash.html'
 
     def get(self, request):
         students = Student.objects.all()
@@ -37,7 +37,7 @@ class StudentDash(View):
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class SchoolandStaffDash(View):
-    template = 'staff/schooldash.html'
+    template = 'staff-schooldash.html'
 
     def get(self, request):
         staff = Staff.objects.all()
@@ -50,7 +50,7 @@ Student Object Views
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class StudentUploadView(CreateView):
-    template_name = "staff/uploadobject.html"
+    template_name = "staff-uploadobject.html"
     model = Student
     form_class = StudentUpload
 
@@ -63,7 +63,7 @@ class StudentUploadView(CreateView):
 @method_decorator([login_required, staff_required], name='dispatch')
 class StudentDetailView(DetailView):
     model = Student
-    template_name = "staff/studentdetail.html"
+    template_name = "staff-studentdetail.html"
 
 
 @method_decorator([login_required, staff_required], name='dispatch')
@@ -74,7 +74,7 @@ class StudentDeleteView(DeleteView):
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class StudentUpdateView(UpdateView):
-    template_name = "staff/uploadobject.html"
+    template_name = "staff-uploadobject.html"
     model = Student
     form_class = StudentUpdate # Used to skip form validation
 
@@ -102,7 +102,7 @@ School Object Views
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class SchoolUploadView(CreateView):
-    template_name = "staff/uploadobject.html"
+    template_name = "staff-uploadobject.html"
     model = School
     form_class = SchoolUpload
     success_url = '/staff/allschoolsandstaff'
@@ -116,7 +116,7 @@ class SchoolUploadView(CreateView):
 @method_decorator([login_required, staff_required], name='dispatch')
 class SchoolDetailView(DetailView):
     model = School
-    template_name = "staff/schooldetail.html"
+    template_name = "staff-schooldetail.html"
 
 
 @method_decorator([login_required, staff_required], name='dispatch')
@@ -127,7 +127,7 @@ class SchoolDeleteView(DeleteView):
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class SchoolUpdateView(UpdateView):
-    template_name = "staff/uploadobject.html"
+    template_name = "staff-uploadobject.html"
     model = School
     fields = '__all__'
 
@@ -137,7 +137,7 @@ Staff Object Views
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class StaffUploadView(CreateView):
-    template_name = "staff/uploadobject.html"
+    template_name = "staff-uploadobject.html"
     model = Staff
     form_class = StaffUpload
     success_url = '/staff/allschoolsandstaff'
@@ -150,7 +150,7 @@ class StaffUploadView(CreateView):
 @method_decorator([login_required, staff_required], name='dispatch')
 class StaffDetailView(DetailView):
     model = Staff
-    template_name = "staff/staffdetail.html"
+    template_name = "staff-staffdetail.html"
 
 
 @method_decorator([login_required, staff_required], name='dispatch')
@@ -161,6 +161,6 @@ class StaffDeleteView(DeleteView):
 
 @method_decorator([login_required, staff_required], name='dispatch')
 class StaffUpdateView(UpdateView):
-    template_name = "staff/uploadobject.html"
+    template_name = "staff-uploadobject.html"
     model = Staff
     fields = '__all__'
