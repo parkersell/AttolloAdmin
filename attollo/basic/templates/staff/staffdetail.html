@@ -1,0 +1,29 @@
+{% extends "basestaff.html" %}
+
+{% block title %}Attollo Prep Admin - Staff Detail{% endblock %}
+
+{% block content %}
+<div class="col-lg-6">
+    <div class="card-body ">
+        <div class="card mb-4">
+            <!-- Card Header - Accordion -->
+            <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button"
+                aria-expanded="true" aria-controls="collapseCardExample">
+                <h6 class="m-0 font-weight-bold text-primary">{{object}}</h6>
+            </a>
+            <!-- Card Content - Collapse -->
+            <div class="collapse show" id="collapseCardExample">
+                <div class="card-body">
+
+                    <p><b>Email</b>: {{object.email}}</p>
+                    <a href="{% url 'staff:staffmember_update' object.pk %}" class="button"><input
+                            class="btn btn-primary" type="submit" value="Update Staff Member"></a>
+                    <a href="{% url 'staff:staffmember_delete' object.pk %}" class="button"><input
+                            class="btn btn-danger" type="submit" value="Delete Staff"></a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content%}
