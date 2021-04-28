@@ -9,10 +9,10 @@ from dateutil.relativedelta import relativedelta
 from django.urls import reverse
 
 # https://pypi.org/project/django-address/
-from address.models import AddressField
+# from address.models import AddressField
 
 # https://pypi.org/project/django-multiselectfield/
-from multiselectfield import MultiSelectField
+# from multiselectfield import MultiSelectField
 
 # https://github.com/daviddrysdale/python-phonenumbers
 import phonenumbers
@@ -44,12 +44,6 @@ def max_value_current_year(value):
     return MaxValueValidator(date.today().year+6)(value)  
 
 class Student(Person):
-    RACE_CHOICES = ((1, 'Caucasian'),
-                    (2, 'Hispanic'),
-                    (3, 'African American'),
-                    (4, 'Asian'),
-                    (5, 'American Indian'),
-                    (6, 'Pacific Islander'))
     SIZE_CHOICES = (
         ('S', 'S'),
         ('M', 'M'),
@@ -61,57 +55,55 @@ class Student(Person):
                          ('Guardian 2', 'Guardian 2'))
 
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=40, verbose_name="Email")
-    phonenum = PhoneNumberField(blank=True, verbose_name="Phone Number")
-    dob = models.DateField(verbose_name="Date of Birth")
+    email = models.EmailField(null=True, max_length=40, verbose_name="Email")
+    phonenum = PhoneNumberField(null =True, blank=True, verbose_name="Phone Number")
+    dob = models.DateField(null = True, verbose_name="Date of Birth")
     # this means that Schools must be defined before students
     schoolid = models.ForeignKey(
         "School", on_delete=models.CASCADE, verbose_name="School")
     # male, female, plus, could make this a choice one
     gradyear = models.IntegerField(verbose_name="Graduation Year", validators=[MinValueValidator(2013), max_value_current_year])
-    gender = models.CharField(max_length=30, verbose_name="Gender")
-    image = ResizedImageField(size=[300, 150], quality = 100,
+    gender = models.CharField(null = True, max_length=30, verbose_name="Gender")
+    image = ResizedImageField(null = True, size=[300, 150], quality = 100,
         upload_to='profile_image', blank=True, verbose_name="Profile Picture")
-    race = MultiSelectField(choices=RACE_CHOICES,
-                            max_choices=3, verbose_name="Race")
-    # address = AddressField(verbose_name="Address")
+    race = models.CharField(null = True, max_length=30, verbose_name="Race")
+    address = models.CharField(null = True, max_length=60, verbose_name="Address")
     shirt = models.CharField(
         choices=SIZE_CHOICES, verbose_name="Shirt Size", max_length=3)
-    short = models.CharField(
+    short = models.CharField(null = True, 
         choices=SIZE_CHOICES, verbose_name="Short Size", max_length=3)
-    student_ig = models.CharField(
+    student_ig = models.CharField(null = True, 
         max_length=30, verbose_name="Instagram Username", blank=True)
-    favcandy = models.CharField(
+    favcandy = models.CharField(null = True, 
         max_length=30, verbose_name="Favorite Candy", blank=True)
-    guard1fname = models.CharField(
+    guard1fname = models.CharField(null = True, 
         max_length=30, verbose_name="Guardian 1 First Name")
-    guard1lname = models.CharField(
+    guard1lname = models.CharField(null = True, 
         max_length=30, verbose_name="Guardian 1 Last Name")
-    guard1phonenum = PhoneNumberField(
+    guard1phonenum = PhoneNumberField(null = True, 
         blank=True, verbose_name="Guardian 1 Phone Number")
-    guard1email = models.EmailField(
+    guard1email = models.EmailField(null = True, 
         max_length=40, verbose_name="Guardian 1 Email")
-    guard1occ = models.CharField(
+    guard1occ = models.CharField(null = True, 
         max_length=40, verbose_name="Guardian 1 Occupation", blank=True)
-    guard1shirt = models.CharField(
-        choices=SIZE_CHOICES, verbose_name="Guardian 1 Shirt size", max_length=3, blank=True)
+    guard1shirt = models.CharField(null = True, 
+        choices=SIZE_CHOICES, verbose_name="Guardian 1 Shirt Size", max_length=3, blank=True)
 
-    guard2fname = models.CharField(
+    guard2fname = models.CharField(null = True, 
         max_length=30, verbose_name="Guardian 2 First Name", blank=True)
-    guard2lname = models.CharField(
+    guard2lname = models.CharField(null = True, 
         max_length=30, verbose_name="Guardian 2 Last Name", blank=True)
-    guard2phonenum = PhoneNumberField(
+    guard2phonenum = PhoneNumberField(null = True, 
         blank=True, verbose_name="Guardian 2 Phone Number")
-    guard2email = models.EmailField(
+    guard2email = models.EmailField(null = True, 
         max_length=40, verbose_name="Guardian 2 Email", blank=True)
-    guard2occ = models.CharField(
+    guard2occ = models.CharField(null = True, 
         max_length=40, verbose_name="Guardian 2 Occupation", blank=True)
-    guard2shirt = models.CharField(
-        choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt size", max_length=3, blank=True)
-    emergcontact = models.CharField(
-        choices=EMERGENCY_CHOICES, max_length=20, verbose_name="Emergency Contact")
+    guard2shirt = models.CharField(null = True, 
+        choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt Size", max_length=3, blank=True)
+    emergcontact = models.CharField(null = True, max_length=50, verbose_name="Emergency Contact")
     # comments = models.JSONField(verbose_name="Comments")
-    comments = models.TextField(blank=True, verbose_name="Additional Comments")
+    comments = models.TextField(null =True, blank=True, verbose_name="Additional Comments")
 
     def get_fields_forsearch(self):
         allfields = [(field.verbose_name, field.value_from_object(self))
@@ -127,7 +119,7 @@ class Student(Person):
                 school_pk = neededfields[i][1]
                 neededfields[i] = ("School", School.objects.get(pk=school_pk))
             if "Phone Number" in neededfields[i][0]:
-                if neededfields[i][1] != "":
+                if neededfields[i][1] != "" and neededfields[i][1] != None:
                     neededfields[i] = (neededfields[i][0], phonenumbers.format_number(
                         neededfields[i][1], phonenumbers.PhoneNumberFormat.NATIONAL))
             if neededfields[i][0] == "Year in School":
@@ -152,6 +144,8 @@ class Student(Person):
         return searchfields
 
     def dobprint(self):
+        if self.dob == None:
+            return None
         return self.dob.strftime('%B %d, %Y')
 
     
@@ -159,6 +153,8 @@ class Student(Person):
     @ property
     def age(self):
         birthDate = self.dob
+        if birthDate == None:
+            return None
         today = date.today()
         age = today.year - birthDate.year - \
             ((today.month, today.day) < (birthDate.month, birthDate.day))

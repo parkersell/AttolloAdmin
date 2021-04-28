@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'basic',
     'rest_framework',
     'phonenumber_field',
-    'multiselectfield',
-    'address',
+    # 'multiselectfield',
+    # 'address',
     'crispy_forms',
 ]
 
@@ -133,4 +133,4 @@ LOGOUT_REDIRECT_URL = 'home'
 AUTH_USER_MODEL = 'basic.User'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #this is for address
-GOOGLE_API_KEY = env('GOOGLE_API_KEY')
+# GOOGLE_API_KEY = env('GOOGLE_API_KEY')
