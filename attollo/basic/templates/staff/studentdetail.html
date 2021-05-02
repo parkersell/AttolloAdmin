@@ -28,10 +28,10 @@
                     <p><b>{{label}}</b>: {{ value }}</p>
                     {% endif %}
                     {% endfor %}
-                    <a href="{% url 'staff:student_update' object.pk %}" class="button"><input type="submit"
-                            value="Update User"></a>
-                    <a href="{% url 'staff:student_delete' object.pk %}" class="button"><input type="submit"
-                            value="Delete User"></a>
+                    <a href="{% url 'staff:student_update' object.pk %}" class="button"><input class="btn btn-primary"
+                            type="submit" value="Update User"></a>
+                    <a href="{% url 'staff:student_delete' object.pk %}" class="button"><input class="btn btn-danger"
+                            type="submit" value="Delete User"></a>
 
 
                 </div>

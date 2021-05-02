@@ -9,6 +9,7 @@ from django.db import transaction
 # https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, HTML
+from .layout import newstudentuploadlayout, uploadlayout, updatelayout
 from datetime import date
 
 import json
@@ -17,7 +18,7 @@ from django.forms import widgets
 def year_choices():
     return [(r,r) for r in range(2013, date.today().year+6)]
 
-# for comments
+# for comments THIS IS UNUSED
 class PrettyJSONWidget(widgets.Textarea):
 
     def format_value(self, value):
@@ -32,13 +33,24 @@ class PrettyJSONWidget(widgets.Textarea):
             print("Error while formatting JSON: {}".format(e))
             return super(PrettyJSONWidget, self).format_value(value)
 
+STATES = (
+    ('', 'Choose...'),
+    ('PA', 'Pennsylvania'),
+    ('NJ', 'New Jersey'),
+    ('MD', 'Maryland'),
+    ('VA', 'Virginia'),
+    ('NY', 'New York'),
+    ('OH', 'Ohio'),
+    ('DE', 'Delaware'),
+)
+
 
 # Used for update
 class StudentUpdate(forms.ModelForm):
     gradyear = forms.TypedChoiceField(coerce=int, choices=year_choices)
     class Meta:
         model = Student
-        fields = '__all__'
+        fields= '__all__'
         field_classes = {
             'phonenum': PhoneNumberField,
             
@@ -51,90 +63,33 @@ class StudentUpdate(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        ## if you modify this make sure its modified in the other one. 
-        self.helper.layout = Layout(
-            HTML('<h1 class="h4 mb-2 text-gray-800">Student Personal Info</h1>'),
-            HTML('<hr></hr>'),
-            HTML('<div class="text"><p>All things with an * are required </a></div>'),
-            Row(
-                Column('fname', css_class='form-group col-md-6 mb-0'),
-                Column('lname', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('email', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('phonenum', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('schoolid', css_class='form-group col-md-6 mb-0'),
-                Column('gradyear', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('dob', css_class='form-group col-md-6 mb-0'),
-            ), 
-            Row(
-                Column('gender', css_class='form-group col-md-6 mb-0'),
-            ), 
-            'image',
-            'race',
-            Row(
-                Column('shirt', css_class='form-group col-md-6 mb-0'),
-                Column('short', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('student_ig', css_class='form-group col-md-6 mb-0'),
-            ), 
-            'favcandy',
-            HTML('<h1 class="h4 mb-2 text-gray-800">Guardian 1 Info</h1>'),
-            HTML('<hr></hr>'),
-            Row(
-                Column('guard1fname', css_class='form-group col-md-6 mb-0'),
-                Column('guard1lname', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('guard1email', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('guard1phonenum', css_class='form-group col-md-6 mb-0'),
-            ),
-            'guard1occ',
-            Row(
-                Column('guard1shirt', css_class='form-group col-md-6 mb-0'),
-            ),
-            HTML('<h1 class="h4 mb-2 text-gray-800">Guardian 2 Info</h1>'),
-            HTML('<hr></hr>'),
-            Row(
-                Column('guard2fname', css_class='form-group col-md-6 mb-0'),
-                Column('guard2lname', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('guard2email', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('guard2phonenum', css_class='form-group col-md-6 mb-0'),
-            ),
-            'guard2occ',
-            Row(
-                Column('guard2shirt', css_class='form-group col-md-6 mb-0'),
-            ),
-            HTML('<hr></hr>'),
-            HTML('<div class="text"><p>Choose which guardian should be the primary contact in case of an emergency </a></div>'),
-            Row(
-                Column('emergcontact', css_class='form-group col-md-6 mb-0'),
-            ),
-            'comments',
-            Submit('submit', 'Upload')
-        )
+        self.helper.layout = updatelayout
+    
+    
     
 
 #used for upload
 class StudentUpload(StudentUpdate):
+    # this is copied code in the newstudentupload below
+    address_1 = forms.CharField(
+        label='Address',
+        widget=forms.TextInput(attrs={'placeholder': '1234 Main St'})
+    )
+    address_2 = forms.CharField(
+        widget=forms.TextInput(attrs={'placeholder': 'Apartment, studio, or floor'}),required=False
+    )
+    city = forms.CharField()
+    state = forms.ChoiceField(choices=STATES)
+    zip_code = forms.CharField(label='Zip')
+
+    class Meta:
+        model = Student
+        exclude = ['address']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = uploadlayout
 
     def clean(self):
         data = super().clean()
@@ -148,87 +103,46 @@ class StudentUpload(StudentUpdate):
                 'Would you like to update? If so, click this <a href="{0}">Update User</a> link'.format(reverse('staff:student_update', kwargs={'pk': s[0].pk})))
             )
 
+    # this is copied code in the newstudentupload below
+    def save(self, commit=True):
+        student = super().save(commit=False)
+
+        student.address = self.cleaned_data['address_1']+ self.cleaned_data['address_2']+ ' '+\
+                self.cleaned_data['city'] + ', '+ self.cleaned_data['state'] +' ' + self.cleaned_data['zip_code']
+        student.save()
+        return student
+
 
 class NewStudentUpload(StudentUpdate):
+    # this is copied code in the studentupload above
+    address_1 = forms.CharField(
+        label='Address',
+        widget=forms.TextInput(attrs={'placeholder': '1234 Main St'})
+    )
+    address_2 = forms.CharField(
+        widget=forms.TextInput(attrs={'placeholder': 'Apartment, studio, or floor'}),required=False
+    )
+    city = forms.CharField()
+    state = forms.ChoiceField(choices=STATES)
+    zip_code = forms.CharField(label='Zip')
+    
     class Meta:
         model = Student
-        exclude = ['fname', 'lname', 'email']
+        exclude = ['fname', 'lname', 'email','address']
 
-    ## if you modify this make sure its modified in the other one.
     def __init__(self, *args, **kwargs):
-        super(NewStudentUpload, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.layout = Layout(
-            HTML('<h1 class="h4 mb-2 text-gray-800">Student Personal Info</h1>'),
-            HTML('<hr></hr>'),
-            HTML('<div class="text"><p>All things with an * are required </a></div>'),
-            Row(
-                Column('schoolid', css_class='form-group col-md-6 mb-0'),
-                Column('gradyear', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('phonenum', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('dob', css_class='form-group col-md-6 mb-0'),
-            ), 
-            Row(
-                Column('gender', css_class='form-group col-md-6 mb-0'),
-            ), 
-            'image',
-            'race',
-            Row(
-                Column('shirt', css_class='form-group col-md-6 mb-0'),
-                Column('short', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('student_ig', css_class='form-group col-md-6 mb-0'),
-            ), 
-            'favcandy',
-            HTML('<h1 class="h4 mb-2 text-gray-800">Guardian 1 Info</h1>'),
-            HTML('<hr></hr>'),
-            Row(
-                Column('guard1fname', css_class='form-group col-md-6 mb-0'),
-                Column('guard1lname', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('guard1email', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('guard1phonenum', css_class='form-group col-md-6 mb-0'),
-            ),
-            'guard1occ',
-            Row(
-                Column('guard1shirt', css_class='form-group col-md-6 mb-0'),
-            ),
-            HTML('<h1 class="h4 mb-2 text-gray-800">Guardian 2 Info</h1>'),
-            HTML('<hr></hr>'),
-            Row(
-                Column('guard2fname', css_class='form-group col-md-6 mb-0'),
-                Column('guard2lname', css_class='form-group col-md-6 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('guard2email', css_class='form-group col-md-6 mb-0'),
-            ),
-            Row(
-                Column('guard2phonenum', css_class='form-group col-md-6 mb-0'),
-            ),
-            'guard2occ',
-            Row(
-                Column('guard2shirt', css_class='form-group col-md-6 mb-0'),
-            ),
-            HTML('<hr></hr>'),
-            HTML('<div class="text"><p>Choose which guardian should be the primary contact in case of an emergency </a></div>'),
-            Row(
-                Column('emergcontact', css_class='form-group col-md-6 mb-0'),
-            ),
-            'comments',
-            Submit('submit', 'Upload')
-        )
+        self.helper.layout = newstudentuploadlayout
+        
+    # this is copied code in the studentupload above
+    def save(self, commit=True):
+        student = super().save(commit=False)
+
+        student.address = self.cleaned_data['address_1']+ self.cleaned_data['address_2']+ ' '+\
+                self.cleaned_data['city'] + ', '+ self.cleaned_data['state'] +' ' + self.cleaned_data['zip_code']
+        student.save()
+        return student
 
     
 

@@ -54,15 +54,20 @@ class UploadView(CreateView):
     model = Student
     form_class = NewStudentUpload
     success_url = '/student/'
-    
+
+    def form_invalid(self, form):
+        print(form.errors)
+        return super().form_invalid(form)
 
     def form_valid(self, form):
-        student = form.save(commit=False)
+        print("hi")
+        student = form.save(commit=True)
         user =  User.objects.get(username=self.request.user.username) 
         student.fname = user.first_name
         student.lname = user.last_name
         student.email = user.username
         student.save()
+        print(student)
         user.data_id = student
         user.save()
         return super().form_valid(form)
