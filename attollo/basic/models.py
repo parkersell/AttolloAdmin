@@ -55,7 +55,7 @@ class Student(Person):
                          ('Guardian 2', 'Guardian 2'))
 
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(null=True, max_length=40, verbose_name="Email")
+    email = models.EmailField(null=True, max_length=50, verbose_name="Email")
     phonenum = PhoneNumberField(null =True, blank=True, verbose_name="Phone Number")
     dob = models.DateField(null = True, verbose_name="Date of Birth")
     # this means that Schools must be defined before students
@@ -66,7 +66,7 @@ class Student(Person):
     gender = models.CharField(null = True, max_length=30, verbose_name="Gender")
     image = ResizedImageField(null = True, size=[300, 150], quality = 100,
         upload_to='profile_image', blank=True, verbose_name="Profile Picture")
-    race = models.CharField(null = True, max_length=30, verbose_name="Race")
+    race = models.CharField(null = True, max_length=40, verbose_name="Race")
     address = models.CharField(null = True, max_length=60, verbose_name="Address")
     shirt = models.CharField(
         choices=SIZE_CHOICES, verbose_name="Shirt Size", max_length=3)
@@ -83,9 +83,9 @@ class Student(Person):
     guard1phonenum = PhoneNumberField(null = True, 
         blank=True, verbose_name="Guardian 1 Phone Number")
     guard1email = models.EmailField(null = True, 
-        max_length=40, verbose_name="Guardian 1 Email")
+        max_length=50, verbose_name="Guardian 1 Email")
     guard1occ = models.CharField(null = True, 
-        max_length=40, verbose_name="Guardian 1 Occupation", blank=True)
+        max_length=60, verbose_name="Guardian 1 Occupation", blank=True)
     guard1shirt = models.CharField(null = True, 
         choices=SIZE_CHOICES, verbose_name="Guardian 1 Shirt Size", max_length=3, blank=True)
 
@@ -96,12 +96,12 @@ class Student(Person):
     guard2phonenum = PhoneNumberField(null = True, 
         blank=True, verbose_name="Guardian 2 Phone Number")
     guard2email = models.EmailField(null = True, 
-        max_length=40, verbose_name="Guardian 2 Email", blank=True)
+        max_length=50, verbose_name="Guardian 2 Email", blank=True)
     guard2occ = models.CharField(null = True, 
-        max_length=40, verbose_name="Guardian 2 Occupation", blank=True)
+        max_length=60, verbose_name="Guardian 2 Occupation", blank=True)
     guard2shirt = models.CharField(null = True, 
         choices=SIZE_CHOICES, verbose_name="Guardian 2 Shirt Size", max_length=3, blank=True)
-    emergcontact = models.CharField(null = True, max_length=50, verbose_name="Emergency Contact")
+    emergcontact = models.CharField(null = True, max_length=60, verbose_name="Emergency Contact")
     # comments = models.JSONField(verbose_name="Comments")
     comments = models.TextField(null =True, blank=True, verbose_name="Additional Comments")
 
