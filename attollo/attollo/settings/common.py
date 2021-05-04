@@ -134,3 +134,4 @@ AUTH_USER_MODEL = 'basic.User'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #this is for address
 # GOOGLE_API_KEY = env('GOOGLE_API_KEY')
+COMMAND_FOLDER = os.path.join(BASE_DIR.parent, 'basic\management\commands')
