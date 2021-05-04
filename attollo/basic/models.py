@@ -63,7 +63,7 @@ class Student(Person):
         "School", on_delete=models.CASCADE, verbose_name="School")
     # male, female, plus, could make this a choice one
     gradyear = models.IntegerField(verbose_name="Graduation Year", validators=[MinValueValidator(2013), max_value_current_year])
-    gender = models.CharField(null = True, max_length=30, verbose_name="Gender")
+    gender = models.CharField(null = True, max_length=70, verbose_name="Gender")
     image = ResizedImageField(null = True, size=[300, 150], quality = 100,
         upload_to='profile_image', blank=True, verbose_name="Profile Picture")
     race = models.CharField(null = True, max_length=40, verbose_name="Race")
