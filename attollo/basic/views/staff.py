@@ -70,7 +70,6 @@ class StudentDetailView(DetailView):
 class StudentDeleteView(DeleteView):
     model = Student
     success_url = '/staff'
-    template_name = "staff_confirm_delete.html"
 
 
 @method_decorator([login_required, staff_required], name='dispatch')

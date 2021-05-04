@@ -34,7 +34,6 @@ class PrettyJSONWidget(widgets.Textarea):
             return super(PrettyJSONWidget, self).format_value(value)
 
 STATES = (
-    ('', 'Choose...'),
     ('PA', 'Pennsylvania'),
     ('NJ', 'New Jersey'),
     ('MD', 'Maryland'),
@@ -134,7 +133,7 @@ class NewStudentUpload(StudentUpdate):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = newstudentuploadlayout
-        
+
     # this is copied code in the studentupload above
     def save(self, commit=True):
         student = super().save(commit=False)
