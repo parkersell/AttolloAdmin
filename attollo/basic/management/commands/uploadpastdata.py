@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print(options['filename'][0], options['gradyear'][0])
-        schools = ["Columbia", "Ephrata", "Lancaster Catholic", "Manhiem Central", "Manhiem Township", "Penn Manor"]
+        schools = ["Columbia", "Ephrata", "Lancaster Catholic", "Manheim Central", "Manheim Township", "Penn Manor"]
         for i in schools:
             School.objects.get_or_create(name = i)
         cols = ['email','phonenum', 'student_ig','favcandy','address','gender','race','shirt', 'short', 'guard1phonenum', 'guard1email',
