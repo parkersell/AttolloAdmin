@@ -45,6 +45,7 @@ def max_value_current_year(value):
 
 class Student(Person):
     SIZE_CHOICES = (
+        ('XS','XS')
         ('S', 'S'),
         ('M', 'M'),
         ('L', 'L'),
