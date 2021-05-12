@@ -35,25 +35,30 @@ class Person(models.Model):
 
     __repr__ = __str__
 
+
+# Abstract User takes care of the username and password. 
+# I have made it so username and email are the same in the forms.py
 class User(AbstractUser):
     is_student = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     data_id = models.OneToOneField(Person, on_delete=models.CASCADE, null=True)
 
+# used in the 
 def max_value_current_year(value):
     return MaxValueValidator(date.today().year+6)(value)  
 
 class Student(Person):
     SIZE_CHOICES = (
-        ('XS','XS')
+        ('XS','XS'),
         ('S', 'S'),
         ('M', 'M'),
         ('L', 'L'),
         ('XL', 'XL'),
         ('XXL', 'XXL'),
     )
-    EMERGENCY_CHOICES = (('Guardian 1', 'Guardian 1'),
-                         ('Guardian 2', 'Guardian 2'))
+    # isnt used anymore
+    # EMERGENCY_CHOICES = (('Guardian 1', 'Guardian 1'),
+    #                      ('Guardian 2', 'Guardian 2'))
 
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
     email = models.EmailField(null=True, max_length=50, verbose_name="Email")
@@ -141,7 +146,7 @@ class Student(Person):
     def get_fields_forprofile(self):
         searchfields = self.get_fields_forsearch()
         searchfields = searchfields[2:]
-        del searchfields[1]
+        # del searchfields[1]
         return searchfields
 
     def dobprint(self):
