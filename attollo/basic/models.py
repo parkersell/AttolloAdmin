@@ -81,7 +81,7 @@ class Student(Person):
     student_ig = models.CharField(null = True, 
         max_length=30, verbose_name="Instagram Username", blank=True)
     favcandy = models.CharField(null = True, 
-        max_length=30, verbose_name="Favorite Candy", blank=True)
+        max_length=65, verbose_name="Favorite Candy", blank=True)
     guard1fname = models.CharField(null = True, 
         max_length=30, verbose_name="Guardian 1 First Name")
     guard1lname = models.CharField(null = True, 
