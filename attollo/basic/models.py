@@ -146,7 +146,7 @@ class Student(Person):
     def get_fields_forprofile(self):
         searchfields = self.get_fields_forsearch()
         searchfields = searchfields[2:]
-        # del searchfields[1]
+        del searchfields[1] # deletes the has an account variable which is only needed to show to staff
         return searchfields
 
     def dobprint(self):

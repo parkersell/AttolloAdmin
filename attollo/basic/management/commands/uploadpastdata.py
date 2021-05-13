@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('filename', nargs='+')
 
-        parser.add_argument('gradyear', nargs='+', type=int)
+        parser.add_argument('gradyear', nargs='+', type=int) # put 0 if the gradyear is already specified in dataframe
 
     def handle(self, *args, **options):
         print(options['filename'][0], options['gradyear'][0])
@@ -27,10 +27,13 @@ class Command(BaseCommand):
             School.objects.get_or_create(name = i)
 
         
-        # print(df.head())
+        
         count = 0
         cols =df.columns.tolist()
+
+        # interates through each row in dataframe
         for index, r in df.iterrows():
+            # cleans the output for preparation for student creation
             school = r['schoolid']
             phonenum=r['phonenum']
             guard1phonenum= r['guard1phonenum']
@@ -58,11 +61,12 @@ class Command(BaseCommand):
                 guard2phonenum =None
             else:
                 guard2phonenum=str(guard2phonenum)
-
             if pd.isna(dob):
                 dob=None
             else:
                 dob= timezone.make_aware(datetime.strptime(dob,  '%Y-%m-%d'))
+
+            # creates the student object
             schoolid = School.objects.get(name=school)
             studobj, boolean = Student.objects.get_or_create(email=r['email'], phonenum=phonenum, student_ig=r['student_ig'],favcandy = r['favcandy'],
             address=r['address'], gender=r['gender'], race=r['race'],shirt=r['shirt'],short=r['short'],guard1phonenum= guard1phonenum,
@@ -73,6 +77,7 @@ class Command(BaseCommand):
             dob =dob, fname=r['fname'], 
             lname=r['lname'], schoolid = schoolid, gradyear=gradyear
             )
+            # writes out to terminal if the student was created
             if boolean:
                 self.stdout.write(str(count+1)+ ' ' + str(studobj.fname) + ' '+ str(studobj.lname))
                 count+=1

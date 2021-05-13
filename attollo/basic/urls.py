@@ -4,6 +4,8 @@ from .views import basic, staff, student
 
 urlpatterns = [
     path('', basic.home, name='home'),
+    # all staff views
+    # refer to in templates by staff:secondurlname. EX: staff:index
     path('staff/', include(([
         path('', staff.StudentDash.as_view(), name='index'),
         path('allschoolsandstaff/', staff.SchoolandStaffDash.as_view(), name='allschoolsandstaff'),
@@ -24,6 +26,7 @@ urlpatterns = [
         path('updateschool/<pk>', staff.SchoolUpdateView.as_view(), name='school_update'),
         path('deleteschool/<pk>', staff.SchoolDeleteView.as_view(), name="school_delete"),
     ], 'basic'), namespace='staff')),
+    # all student views
     path('student/', include(([
         path('', student.ProfileView.as_view(), name='index'),
         path('upload/', student.UploadView.as_view(), name='upload'),
