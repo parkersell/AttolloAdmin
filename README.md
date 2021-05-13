@@ -158,8 +158,8 @@ I used primarily Class-based Views because with good models, they make code real
 	- `CREATE DATABASE test1;`
   - `GRANT ALL PRIVILEGES ON DATABASE test1 TO devpsu;`
   - `\q`
-  - `Python manage.py migrate`
-  - `Python manage.py createsuperuser`
+  - `python manage.py migrate`
+  - `python manage.py createsuperuser`
 - Important log to view when there is a internal server error not caused by your code, but by gunicorn
 	- `sudo journalctl -u gunicorn`
 ## Things to do
@@ -170,3 +170,8 @@ I used primarily Class-based Views because with good models, they make code real
 - Create an interns model (Leo wanted this)
 	- could create a different user is_intern variable and create it like I have with is_student or is_staff. 
 	- if you wanted to restrict access to certain things like the staff information than you could just add a decorator for the intern user
+- Add 2019, 2018, and alumni data
+- Maybe the table view better by implementing more functions from jquery [datatables.net](datatables.net)
+	- Create a better search mechanism with datatables, like one where you could search for a specific variable
+	- one where you could toggle different fields
+	- one where you could search for a specific variable
